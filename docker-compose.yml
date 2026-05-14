@@ -1,0 +1,57 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: lyceum
+      POSTGRES_USER: lyceum
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lyceum_secret_change_me}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lyceum"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./artifacts/api-py
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://lyceum:${POSTGRES_PASSWORD:-lyceum_secret_change_me}@db:5432/lyceum
+      SESSION_SECRET: ${SESSION_SECRET:-change_this_secret_in_production}
+      UPLOAD_DIR: /app/uploads
+      PORT: 8000
+    volumes:
+      - uploads:/app/uploads
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build:
+      context: .
+      dockerfile: artifacts/messenger/Dockerfile
+      args:
+        VITE_API_BASE: ""
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "80:80"
+    volumes:
+      - uploads:/var/uploads:ro
+
+volumes:
+  pgdata:
+  uploads:
