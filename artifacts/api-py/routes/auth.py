@@ -30,7 +30,6 @@ async def register(body: RegisterRequest, response: Response, db: AsyncSession =
     existing = await db.execute(select(PyUser).where(PyUser.email == body.email.lower()))
     if existing.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Пользователь с таким email уже существует")
-    # First registered user becomes admin
     count = (await db.execute(select(func.count()).select_from(PyUser))).scalar_one()
     role = "admin" if count == 0 else "user"
     user = PyUser(

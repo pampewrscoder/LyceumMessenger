@@ -7,8 +7,6 @@ class CamelModel(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
 
-# ── Users ──────────────────────────────────────────────────────────────────
-
 class UserOut(CamelModel):
     id: str
     email: str
@@ -60,8 +58,6 @@ class UpdateProfileRequest(CamelModel):
         return v
 
 
-# ── E2EE Keys ─────────────────────────────────────────────────────────────
-
 class SaveKeysRequest(BaseModel):
     public_key: str
     encrypted_private_key: str
@@ -79,8 +75,6 @@ class MyKeysOut(BaseModel):
 class PublicKeyOut(BaseModel):
     public_key: str
 
-
-# ── Messages ───────────────────────────────────────────────────────────────
 
 class ReactionOut(CamelModel):
     emoji: str
@@ -118,7 +112,7 @@ class SendMessageRequest(CamelModel):
     content: str = ""
     encrypted_content: str | None = None
     content_iv: str | None = None
-    encrypted_keys: str | None = None  # JSON {user_id: base64_encrypted_aes_key}
+    encrypted_keys: str | None = None
     file_url: str | None = None
     file_name: str | None = None
     file_type: str | None = None
@@ -132,8 +126,6 @@ class EditMessageRequest(CamelModel):
 class ReactRequest(CamelModel):
     emoji: str
 
-
-# ── Chats ──────────────────────────────────────────────────────────────────
 
 class ParticipantOut(CamelModel):
     user: UserOut
@@ -175,19 +167,15 @@ class TypingOut(CamelModel):
     display_names: list[str]
 
 
-# ── Admin ──────────────────────────────────────────────────────────────────
-
 class AdminStatsOut(CamelModel):
     total_users: int
     active_users_24h: int
     total_chats: int
     total_messages: int
     messages_today: int
-    messages_week: list[int]  # last 7 days, oldest first
+    messages_week: list[int]
     new_users_week: list[int]
 
-
-# ── Reports ────────────────────────────────────────────────────────────────
 
 REPORT_REASONS = {"spam", "harassment", "inappropriate", "other"}
 
@@ -213,7 +201,7 @@ class ReportOut(CamelModel):
 
 
 class ResolveReportRequest(CamelModel):
-    status: str  # resolved | dismissed
+    status: str
 
 
 class AdminUpdateUserRequest(CamelModel):

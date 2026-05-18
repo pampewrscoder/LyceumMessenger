@@ -189,7 +189,6 @@ async def react_message(chat_id: int, msg_id: int, body: ReactRequest, db: Async
     msg = await _load_message(db, msg_id)
     if msg.chat_id != chat_id or msg.is_deleted:
         raise HTTPException(status_code=404, detail="Сообщение не найдено")
-    # Toggle reaction
     existing = next((r for r in msg.reactions if r.user_id == current_user.id and r.emoji == body.emoji), None)
     if existing:
         await db.delete(existing)

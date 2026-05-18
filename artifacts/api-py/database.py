@@ -57,10 +57,9 @@ _REPORT_MIGRATIONS = [
 
 
 async def init_db():
-    import models  # noqa: F401
+    import models
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-        # Safe migrations: one statement per execute (asyncpg limitation)
         for stmt in _MIGRATIONS:
             try:
                 await conn.execute(text(stmt))

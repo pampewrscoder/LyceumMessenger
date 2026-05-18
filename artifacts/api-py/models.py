@@ -23,7 +23,7 @@ class PyUser(Base):
     encrypted_private_key: Mapped[str | None] = mapped_column(Text, nullable=True)
     key_salt: Mapped[str | None] = mapped_column(Text, nullable=True)
     key_iv: Mapped[str | None] = mapped_column(Text, nullable=True)
-    role: Mapped[str] = mapped_column(String(20), nullable=False, default="user")  # user | admin
+    role: Mapped[str] = mapped_column(String(20), nullable=False, default="user")
     is_banned: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     last_seen: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
@@ -69,7 +69,7 @@ class PyMessage(Base):
     content: Mapped[str] = mapped_column(Text, nullable=False, default="")
     encrypted_content: Mapped[str | None] = mapped_column(Text, nullable=True)
     content_iv: Mapped[str | None] = mapped_column(Text, nullable=True)
-    encrypted_keys: Mapped[str | None] = mapped_column(Text, nullable=True)  # JSON {user_id: base64_encrypted_aes_key}
+    encrypted_keys: Mapped[str | None] = mapped_column(Text, nullable=True)
     file_url: Mapped[str | None] = mapped_column(Text, nullable=True)
     file_name: Mapped[str | None] = mapped_column(Text, nullable=True)
     file_type: Mapped[str | None] = mapped_column(Text, nullable=True)

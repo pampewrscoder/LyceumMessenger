@@ -37,7 +37,6 @@ async def get_stats(db: AsyncSession = Depends(get_db), _: PyUser = Depends(requ
         select(func.count()).select_from(PyMessage).where(PyMessage.created_at >= today_start)
     )).scalar_one()
 
-    # messages per day for last 7 days
     msgs_week = []
     for i in range(6, -1, -1):
         day_start = (now - timedelta(days=i)).replace(hour=0, minute=0, second=0, microsecond=0)
@@ -48,7 +47,6 @@ async def get_stats(db: AsyncSession = Depends(get_db), _: PyUser = Depends(requ
         )).scalar_one()
         msgs_week.append(c)
 
-    # new users per day for last 7 days
     users_week = []
     for i in range(6, -1, -1):
         day_start = (now - timedelta(days=i)).replace(hour=0, minute=0, second=0, microsecond=0)
@@ -172,7 +170,6 @@ async def delete_chat(chat_id: int, db: AsyncSession = Depends(get_db), _: PyUse
 
 @router.delete("/users/{user_id}/messages")
 async def clear_user_messages(user_id: str, db: AsyncSession = Depends(get_db), _: PyUser = Depends(require_admin)):
-    """Soft-delete all messages from a user."""
     r = await db.execute(select(PyMessage).where(PyMessage.sender_id == user_id, PyMessage.is_deleted == False))
     msgs = r.scalars().all()
     for m in msgs:

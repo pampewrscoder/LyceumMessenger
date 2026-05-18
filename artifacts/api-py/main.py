@@ -20,7 +20,7 @@ from routes.ws import router as ws_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    app.state.typing: dict = {}   # {chat_id: {user_id: datetime}}
+    app.state.typing: dict = {}
     await init_db()
     yield
 

@@ -1,4 +1,3 @@
-"""Entry point — run with: python run.py"""
 import os
 import uvicorn
 

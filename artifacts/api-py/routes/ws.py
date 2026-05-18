@@ -28,7 +28,6 @@ async def _get_user(websocket: WebSocket) -> PyUser | None:
 
 
 async def _get_chat_partner_ids(user_id: str) -> list[str]:
-    """Return all user IDs who share a chat with the given user."""
     async with AsyncSessionLocal() as db:
         subq = select(PyChatParticipant.chat_id).where(PyChatParticipant.user_id == user_id)
         r = await db.execute(
@@ -72,10 +71,8 @@ async def websocket_endpoint(websocket: WebSocket):
 
     if was_offline:
         partner_ids = await _get_chat_partner_ids(uid)
-        # Notify partners that this user is online
         for pid in partner_ids:
             await notify_user(pid, {"type": "user_online", "user_id": uid})
-        # Send snapshot of currently online partners to this user
         online_partners = [pid for pid in partner_ids if pid in connections]
         if online_partners:
             await notify_user(uid, {"type": "online_snapshot", "user_ids": online_partners})
@@ -92,11 +89,9 @@ async def websocket_endpoint(websocket: WebSocket):
             connections[uid].remove(websocket)
             if not connections[uid]:
                 del connections[uid]
-                # User is now fully offline
                 partner_ids = await _get_chat_partner_ids(uid)
                 for pid in partner_ids:
                     await notify_user(pid, {"type": "user_offline", "user_id": uid})
-                # Update last_seen in DB
                 async with AsyncSessionLocal() as db:
                     r = await db.execute(select(PyUser).where(PyUser.id == uid))
                     u = r.scalar_one_or_none()

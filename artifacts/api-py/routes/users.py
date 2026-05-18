@@ -35,7 +35,6 @@ async def search_users(
 
 @router.post("/heartbeat")
 async def heartbeat(db: AsyncSession = Depends(get_db), current_user: PyUser = Depends(get_current_user)):
-    """Call every 30s to keep online status alive."""
     current_user.last_seen = datetime.now(timezone.utc)
     db.add(current_user)
     await db.commit()
